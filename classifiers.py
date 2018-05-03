@@ -10,7 +10,7 @@ import pandas as pd
 
 def balanced_split(df):
     df.reset_index(drop=True, inplace=True)
-    features = ['review_text','rating','filtered','review_length','biz_rvws','user_rvws', 'avg_rating', 'past_filt', 'percent_filt', 'avg_rev_len']
+    features = ['review_text','rating','filtered','review_length','biz_rvws','user_rvws', 'avg_rating', 'past_filt', 'percent_filt', 'avg_rev_len', 'word_count', 'avg_word', 'stopwords', 'numbers', 'upper']
     df = df[features]
     X_train, X_test = train_test_split(df, test_size=0.15, random_state=0)
     classN = X_train[X_train.filtered == 0]
@@ -28,7 +28,7 @@ def balanced_split(df):
 
 def unbalanced_split(df):
     df.reset_index(drop=True, inplace=True)
-    features = ['review_text','rating','filtered','review_length','biz_rvws','user_rvws', 'avg_rating', 'past_filt', 'percent_filt', 'avg_rev_len']
+    features = ['review_text','rating','filtered','review_length','biz_rvws','user_rvws', 'avg_rating', 'past_filt', 'percent_filt', 'avg_rev_len','word_count', 'avg_word', 'stopwords', 'numbers', 'upper']
     df = df[features]
     X_train, X_test = train_test_split(df, test_size=0.15, random_state=0)
     # classN = X_train[X_train.filtered == 0]
@@ -61,7 +61,7 @@ def run_models(X_train, X_test, y_train, y_test):
     print(classification_report(y_test, preds))
     print(accuracy_score(y_test, preds))
 
-    logreg = linear_model.LogisticRegression(class_weight='balanced')
+    logreg = linear_model.LogisticRegression()
     result = logreg.fit(X_train, y_train)
     preds = result.predict(X_test)
     print(f"{result} Results",confusion_matrix(y_test, preds))
@@ -69,10 +69,10 @@ def run_models(X_train, X_test, y_train, y_test):
     print(classification_report(y_test, preds))
     print(accuracy_score(y_test, preds))
 
-    gbc = GradientBoostingClassifier(n_estimators=200)
-    gbc.fit(X_train, y_train)
-    preds = gbc.predict(X_test)
-    print(f"{gbc} Results",confusion_matrix(y_test, preds))
-    print('\n')
-    print(classification_report(y_test, preds))
-    print(accuracy_score(y_test, preds))
+    # gbc = GradientBoostingClassifier(n_estimators=100)
+    # gbc.fit(X_train, y_train)
+    # preds = gbc.predict(X_test)
+    # print(f"{gbc} Results",confusion_matrix(y_test, preds))
+    # print('\n')
+    # print(classification_report(y_test, preds))
+    # print(accuracy_score(y_test, preds))
