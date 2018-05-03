@@ -7,7 +7,9 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.stem import PorterStemmer
-from sklearn.metrics import confusion_matrix, classification_report
+from nltk.stem import SnowballStemmer
+from nltk.stem import WordNetLemmatizer
+from sklearn.metrics import confusion_matrix, classification_report, accuracy_score
 from sklearn.linear_model import SGDClassifier
 import numpy as np
 
@@ -31,9 +33,22 @@ def balanced_class(df):
 
 
 def tfidfed(X_train, X_test, y_train, y_test):
+    stemmer = PorterStemmer()
+
+    def stem_tokens(tokens, stemmer):
+        stemmed = []
+        for item in tokens:
+            stemmed.append(stemmer.stem(item))
+        return stemmed
+
+    def tokenize(text):
+        tokens = nltk.word_tokenize(text)
+        stems = stem_tokens(tokens, stemmer)
+        return stems
+
     stop_words = set(stopwords.words("english"))
-    tfidf = TfidfVectorizer(token_pattern=u'(?ui)\\b\\w*[a-z]+\\w*\\b', analyzer = 'word', stop_words=stop_words, max_features=5000)
-    review_transformer = tfidf.fit(X_train)
+    vectorizer = TfidfVectorizer(token_pattern=u'(?ui)\\b\\w*[a-z]+\\w*\\b', tokenizer=tokenize,  analyzer = 'word', stop_words=stop_words, max_features=2000)
+    review_transformer = vectorizer.fit(X_train)
     X_train_tfidf = review_transformer.transform(X_train)
     X_test_tfidf = review_transformer.transform(X_test)
     tfidf_columns = review_transformer.get_feature_names()
@@ -42,12 +57,13 @@ def tfidfed(X_train, X_test, y_train, y_test):
 
 def count_vectored(X_train, X_test, y_train, y_test):
     stop_words = set(stopwords.words("english"))
-    tfidf = CountVectorizer(token_pattern=u'(?ui)\\b\\w*[a-z]+\\w*\\b', analyzer = 'word', stop_words=stop_words, max_features=5000)
-    review_transformer = tfidf.fit(X_train)
+    vectorizer = CountVectorizer(token_pattern=u'(?ui)\\b\\w*[a-z]+\\w*\\b', analyzer = 'word', stop_words=stop_words, max_features=2000)
+    review_transformer = vectorizer.fit(X_train)
     X_trained = review_transformer.transform(X_train)
     X_tested = review_transformer.transform(X_test)
+    vect_columns = review_transformer.get_feature_names()
     print(review_transformer.get_feature_names()[:30])
-    return X_trained, X_tested, y_train, y_test
+    return X_trained, X_tested, y_train, y_test, vect_columns
 
 ###
 def run_vect_models(X_trained, X_tested, y_train, y_test):
@@ -63,6 +79,7 @@ def run_vect_models(X_trained, X_tested, y_train, y_test):
     print(f"{model} Results",confusion_matrix(y_test, preds))
     print('\n')
     print(classification_report(y_test, preds))
+    print(f"Accuaracy: {accuracy_score}")
 
 
     model = BernoulliNB()
@@ -71,6 +88,7 @@ def run_vect_models(X_trained, X_tested, y_train, y_test):
     print(f"{model} Results",confusion_matrix(y_test, preds))
     print('\n')
     print(classification_report(y_test, preds))
+    print(f"Accuaracy: {accuracy_score}")
 
     model = LinearSVC()
     model.fit(X_trained, y_train)
@@ -78,6 +96,7 @@ def run_vect_models(X_trained, X_tested, y_train, y_test):
     print(f"{model} Results",confusion_matrix(y_test, preds))
     print('\n')
     print(classification_report(y_test, preds))
+    print(f"Accuaracy: {accuracy_score}")
 
 def run_tfidf_models(X_trained, X_tested, y_train, y_test):
     from sklearn.naive_bayes import MultinomialNB
@@ -86,12 +105,13 @@ def run_tfidf_models(X_trained, X_tested, y_train, y_test):
     from sklearn.svm import LinearSVC
     #from sklearn import preprocessing
 
-    # model = MultinomialNB()
-    # model.fit(X_trained, y_train)
-    # preds = model.predict(X_tested)
-    # print(f"{model} Results",confusion_matrix(y_test, preds))
-    # print('\n')
-    # print(classification_report(y_test, preds))
+    model = MultinomialNB()
+    model.fit(X_trained, y_train)
+    preds = model.predict(X_tested)
+    print(f"{model} Results",confusion_matrix(y_test, preds))
+    print('\n')
+    print(classification_report(y_test, preds))
+    print(f"Accuaracy: {accuracy_score(y_test, preds)}")
 
     # model = GaussianNB()
     # X_array = (X_trained).toarray()
@@ -102,13 +122,15 @@ def run_tfidf_models(X_trained, X_tested, y_train, y_test):
     # print(f"{model} Results",confusion_matrix(y_test, preds))
     # print('\n')
     # print(classification_report(y_test, preds))
+    # print(f"Accuaracy: {accuracy_score}")
 
-    # model = BernoulliNB()
-    # model.fit(X_trained, y_train)
-    # preds = model.predict(X_tested)
-    # print(f"{model} Results",confusion_matrix(y_test, preds))
-    # print('\n')
-    # print(classification_report(y_test, preds))
+    model = BernoulliNB()
+    model.fit(X_trained, y_train)
+    preds = model.predict(X_tested)
+    print(f"{model} Results",confusion_matrix(y_test, preds))
+    print('\n')
+    print(classification_report(y_test, preds))
+    print(f"Accuaracy: {accuracy_score(y_test, preds)}")
 
     model = LinearSVC()
     model.fit(X_trained, y_train)
@@ -116,6 +138,7 @@ def run_tfidf_models(X_trained, X_tested, y_train, y_test):
     print(f"{model} Results",confusion_matrix(y_test, preds))
     print('\n')
     print(classification_report(y_test, preds))
+    print(f"Accuaracy: {accuracy_score(y_test, preds)}")
 
 
 def SGD(X_trained, X_tested, y_train, y_test):
@@ -134,6 +157,8 @@ def NB(X_trained, X_tested, y_train, y_test):
     nb.fit(X_trained, y_train)
     preds = nb.predict(X_tested)
     return preds
+
+
 
 if __name__ == '__main__':
     pass
