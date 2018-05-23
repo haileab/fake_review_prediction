@@ -2,7 +2,7 @@
 
 ## Summary
 
-After 8 weeks of learning data science at Galvanize we were tasked with building completing an individual Capstone Project.
+After 8 weeks of intense data science lectures/coding at Galvanize we were tasked with completing an individual Capstone Project.
 
 Everyone uses reviews to make an informed decision about where to eat, what hotel to stay at, or what product to buy. After reading about fake reviews found on Amazon I wanted to see if machine learning can be used to predict fake reviews.
 
