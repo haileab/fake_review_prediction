@@ -25,3 +25,5 @@ NLP model didn’t provide significant signal and wasn’t used in the final mod
 Determine a cost-benefit matrix to filtering genuine or fake reviews that takes into consideration all of the stakeholders for Yelp. This can be used to set a preferred threshold where you can balance out the needs of users, reviewers, and businesses on the platform.
 
 ### Thank you!
+Thanks for visiting. For any questions feel free to reach out.
+<a href="http://www.linkedin.com/in/haileab">Linkedin</a> | <a href="http://www.haileab.com">Website</a>
