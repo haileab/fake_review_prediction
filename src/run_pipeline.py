@@ -2,16 +2,21 @@ import multiprocessing as mp
 import pandas as pd
 pool = mp.Pool(processes=4)
 
-def go():
-    import cleaner
+import cleaner
+import classifiers
+import data_split
+import nlp_models
 
-    df = cleaner.cleanholdout()
+def go():
+    '''
+    Runs the data cleaning/prep and the classification and NLP models.
+    '''
+
+    df = cleaner.merge_files()
     df = cleaner.cumulator(df)
     print(df.head())
-    import classifiers
-    import nlp_fake
-    X_train, X_train_tfidf, X_test, X_test_tfidf, y_train, y_test = classifiers.unbalanced_split(df)
-    X_train_tfidf, X_test_tfidf, y_train, y_test, tfidf_columns = nlp_fake.tfidfed(X_train_tfidf, X_test_tfidf, y_train, y_test)
+    X_train, X_train_tfidf, X_test, X_test_tfidf, y_train, y_test = data_split.unbalanced(df)
+    X_train_tfidf, X_test_tfidf, y_train, y_test, tfidf_columns = nlp_models.tfidfed(X_train_tfidf, X_test_tfidf, y_train, y_test)
     X_train_mid = pd.DataFrame(X_train_tfidf.toarray(), columns=tfidf_columns)
     X_test_mid = pd.DataFrame(X_test_tfidf.toarray(), columns=tfidf_columns)
     X_train.reset_index(drop=True, inplace=True)
